@@ -21,8 +21,7 @@ import {
 
 import { TbTemperatureCelsius } from "react-icons/tb";
 
-import { BounceLoader } from "react-spinners";
-import App from "./App";
+import { ImSpinner8 } from "react-icons/im";
 
 const APIkey = "06fa6983532b88fed1776013fb6650aa";
 
@@ -30,6 +29,9 @@ const Weather = () => {
   const [data, setData] = useState(null);
   const [location, setLocation] = useState("New York");
   const [inputValue, setInputValue] = useState("");
+  const [animate, setAnimate] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleInput = (e) => {
     setInputValue(e.target.value);
@@ -37,30 +39,65 @@ const Weather = () => {
 
   const handleSubmit = (e) => {
     console.log(inputValue);
-    if(inputValue !== ''){
+    if (inputValue !== "") {
       setLocation(inputValue);
     }
+    const input = document.querySelector("input");
+
+    // if input value is empty
+    if (input.value === "") {
+      // set animate to true
+      setAnimate(true);
+      // after 500 ms set animate to false
+      setTimeout(() => {
+        setAnimate(false);
+      }, 500);
+    }
+
+    // clear input
+    input.value = "";
+
+    // prevent defaults
     e.preventDefault();
   };
 
-  const input = document.querySelector('input');
-
- 
-
   useEffect(() => {
+    // set loading to true
+    setLoading(true);
+
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${APIkey}`;
-    axios.get(url).then((res) => {
-      setData(res.data);
-    });
+
+    axios
+      .get(url)
+      .then((res) => {
+        // set the data after 1500 ms
+        setTimeout(() => {
+          setData(res.data);
+          // set loading to false
+          setLoading(false);
+        }, 1500);
+      })
+      .catch((err) => {
+        setLoading(false);
+        setErrorMsg(err);
+      });
   }, [location]);
 
+  // error message
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setErrorMsg("");
+    }, 2000);
+    // clear timer
+    return () => clearTimeout(timer);
+  }, [errorMsg]);
+
+  // if data is false show the loader
   if (!data) {
     return (
-      <div>
-        <div
-          className="flex items-center justify-center bg-center
-     flex-col w-full h-screen">
-          <BounceLoader color="#36d7b7" className=" text-9xl" />
+      <div className="w-full h-screen bg-gradientBg bg-no-repeat bg-cover bg-center flex flex-col justify-center items-center">
+        <div>
+          <ImSpinner8 className="text-5xl animate-spin text-white" />
         </div>
       </div>
     );
@@ -104,9 +141,12 @@ const Weather = () => {
     <div
       className=" w-full h-screen bg-gradientBg bg-no-repeat bg-cover bg-center
      flex-col flex items-center justify-center px-4 lg:px-0">
-      <form
-        action=""
-        className=" h-14 bg-black/30 w-full max-w-[450px] rounded-full backdrop-blur-[32px] mb-8">
+       <form
+        className={`${
+          animate ? 'animate-shake' : 'animate-none'
+        } h-16 bg-black/30 w-full max-w-[450px]
+      rounded-full backdrop-blur-[32px] mb-8`}
+      >
         <div className="h-full relative flex p-2 justify-between items-center">
           <input
             onChange={(e) => handleInput(e)}
@@ -123,9 +163,12 @@ const Weather = () => {
       </form>
 
       {/* card */}
-      <div
-        className=" w-full max-w-[450px] bg-black/20 min-h-[584px]
-       text-white backdrop-blur-[32px] rounded-[32px] py-12 px-6">
+      <div className='w-full max-w-[450px] bg-black/20 min-h-[584px] text-white backdrop-blur-[32px] rounded-[32px] py-12 px-6'>
+        {loading ? (
+          <div className='w-full h-full flex justify-center items-center'>
+            <ImSpinner8 className='text-white text-5xl animate-spin' />
+          </div>
+        ) : (
         <div>
           {/* card top */}
           <div className="flex items-center gap-x-5 rounded-xl">
@@ -210,6 +253,7 @@ const Weather = () => {
             </div>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
