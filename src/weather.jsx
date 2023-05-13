@@ -104,7 +104,6 @@ const Weather = () => {
   }
 
   let icon;
-
   switch (data.weather[0].main) {
     case "Clouds":
       icon = <IoMdCloudy />;
@@ -140,7 +139,7 @@ const Weather = () => {
   return (
     <div
       className=" w-full h-screen bg-gradientBg bg-no-repeat bg-cover bg-center
-     flex-col flex items-center justify-center px-4 lg:px-0">
+     flex-col flex items-center justify-center px-4 lg:px-0 ">
        <form
         className={`${
           animate ? 'animate-shake' : 'animate-none'
