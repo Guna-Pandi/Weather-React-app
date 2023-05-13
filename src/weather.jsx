@@ -22,12 +22,30 @@ import {
 import { TbTemperatureCelsius } from "react-icons/tb";
 
 import { BounceLoader } from "react-spinners";
+import App from "./App";
 
 const APIkey = "06fa6983532b88fed1776013fb6650aa";
 
 const Weather = () => {
   const [data, setData] = useState(null);
-  const [location, setLocation] = useState("Namakkal");
+  const [location, setLocation] = useState("New York");
+  const [inputValue, setInputValue] = useState("");
+
+  const handleInput = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    console.log(inputValue);
+    if(inputValue !== ''){
+      setLocation(inputValue);
+    }
+    e.preventDefault();
+  };
+
+  const input = document.querySelector('input');
+
+ 
 
   useEffect(() => {
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${APIkey}`;
@@ -39,17 +57,16 @@ const Weather = () => {
   if (!data) {
     return (
       <div>
-        <div className="flex items-center justify-center bg-center
+        <div
+          className="flex items-center justify-center bg-center
      flex-col w-full h-screen">
-          <BounceLoader className=" text-5xl " />
+          <BounceLoader color="#36d7b7" className=" text-9xl" />
         </div>
       </div>
     );
   }
 
   let icon;
-
-  console.log(data.weather[0].main);
 
   switch (data.weather[0].main) {
     case "Clouds":
@@ -61,19 +78,19 @@ const Weather = () => {
       break;
 
     case "Rain":
-      icon = <IoMdRainy />;
+      icon = <IoMdRainy className="text-[#31cafb]" />;
       break;
 
     case "Clear":
-      icon = <IoMdSunny />;
+      icon = <IoMdSunny className="text-[#ffde33]" />;
       break;
 
     case "Drizzle":
-      icon = <BsCloudDrizzleFill />;
+      icon = <BsCloudDrizzleFill className="text-[#31cafb]" />;
       break;
 
     case "Snow":
-      icon = <IoMdSnow />;
+      icon = <IoMdSnow className="text-[#31cafb]" />;
       break;
 
     case "Thunderstrome":
@@ -87,8 +104,23 @@ const Weather = () => {
     <div
       className=" w-full h-screen bg-gradientBg bg-no-repeat bg-cover bg-center
      flex-col flex items-center justify-center px-4 lg:px-0">
-
-      <form action="">form</form>
+      <form
+        action=""
+        className=" h-14 bg-black/30 w-full max-w-[450px] rounded-full backdrop-blur-[32px] mb-8">
+        <div className="h-full relative flex p-2 justify-between items-center">
+          <input
+            onChange={(e) => handleInput(e)}
+            type="text"
+            placeholder="Search the city or contry"
+            className="flex-1 bg-transparent outline-none placeholder:text-white text-white text-[15px] font-light pl-6 h-full"
+          />
+          <button
+            onClick={(e) => handleSubmit(e)}
+            className="bg-[#1ab8ed] w-16 h-10 rounded-full flex justify-center items-center transition hover:bg-[#76d2f0]">
+            <IoMdSearch className="text-2xl text-white" />
+          </button>
+        </div>
+      </form>
 
       {/* card */}
       <div
